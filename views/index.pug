@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 Click a Playlist to Start!
+  div(class='plGrid')
+    -playlists.items.forEach(function(item){
+    div(class='plItem')
+      h2(class='albumTitle') #{item.name}
+      -if(item.images[0]!=='undefined'){
+      a(href='/play?id='+item.id)
+        img(class='albumImg' src=item.images[0].url)
+      -}
+    -});
+  form#play(method='GET', action='/play')
+    button(type='submit') Play!
