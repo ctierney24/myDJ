@@ -1,15 +1,37 @@
 extends layout
 
 block content
-  h1 Click a Playlist to Start!
-  div(class='plGrid')
-    -playlists.items.forEach(function(item){
-    div(class='plItem')
-      h2(class='albumTitle') #{item.name}
-      -if(item.images[0]!=='undefined'){
-      a(href='/play?id='+item.id)
-        img(class='albumImg' src=item.images[0].url)
+  div(class='searchIn')
+    h1 Search for Inspirations
+    form(class='searchSpotify' method='GET' action='/search')
+      input(class='bigSearch' type='search' name='q')
+      button(class='searchButton' type='submit') Search Spotify
+  -if(results){
+  div(class='resultGrid')
+    div(class='resultSub')
+      h2 Albums
+      -results.albums.items.forEach(function(item){
+      -if(item.images[0]){
+      div(class='gridItem')
+        h2 #{item.name}
+        a(href='/addItem?id='+item.id)
+          img(class='albumImg' src=item.images[0].url)
       -}
-    -});
-  form#play(method='GET', action='/play')
-    button(type='submit') Play!
+      -})
+    div(class='resultSub')
+    div(class='resultSub')
+    div(class='resultSub')
+  -}
+  -if(playlists){
+  div(class='userPlaylists')
+    h1 Or choose one of your playlists:
+    div(class='plGrid')
+      -playlists.items.forEach(function(item){
+      -if(item.images[0]){
+      div(class='gridItem')
+        h2(class='albumTitle') #{item.name}
+        a(href='/play?id='+item.id)
+          img(class='albumImg' src=item.images[0].url)
+      -}
+      -});
+  -}
