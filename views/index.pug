@@ -6,6 +6,19 @@ block content
     form(class='searchSpotify' method='GET' action='/search')
       input(class='bigSearch' type='search' name='q')
       button(class='searchButton' type='submit') Search Spotify
+  -if(seeds){
+  h2 Playlist Seeds
+  div(class='seedGrid')
+    -for(var i=0; i<seeds.length; i++){
+    div
+      label #{seeds[i].name}
+      form(method='POST' action='/removeItem?id='+seeds[i].id)
+        button(type='submit') Remove
+    -}
+  br
+  form(method='GET' action='/buildPlaylist')
+    button(class='searchButton' type='submit') Generate Playlist
+  -}
   -if(results){
   div(class='resultGrid')
     div(class='resultSub')
@@ -14,13 +27,41 @@ block content
       -if(item.images[0]){
       div(class='gridItem')
         h2 #{item.name}
-        a(href='/addItem?id='+item.id)
+        a(href='/addItem?id='+item.id+'&name='+item.name)
           img(class='albumImg' src=item.images[0].url)
       -}
       -})
     div(class='resultSub')
+      h2 Artists
+      -results.artists.items.forEach(function(item){
+      -if(item.images[0]){
+      div(class='gridItem')
+        h2 #{item.name}
+        a(href='/addItem?id='+item.id+'&name='+item.name)
+          img(class='albumImg' src=item.images[0].url)
+      -}
+      -})
     div(class='resultSub')
+      h2 Songs
+      -results.tracks.items.forEach(function(item){
+      //-if(item.images[0]){
+      div(class='gridItem')
+        //h2 #{item.name}
+        a(href='/addItem?id='+item.id+'&name='+item.name)
+          p #{item.name}
+          //img(class='albumImg' src=item.images[0].url)
+      //-}
+      -})
     div(class='resultSub')
+      h2 Playlists
+      -results.playlists.items.forEach(function(item){
+      -if(item.images[0]){
+      div(class='gridItem')
+        h2 #{item.name}
+        a(href='/addItem?id='+item.id+'&name='+item.name)
+          img(class='albumImg' src=item.images[0].url)
+      -}
+      -})
   -}
   -if(playlists){
   div(class='userPlaylists')
@@ -30,7 +71,7 @@ block content
       -if(item.images[0]){
       div(class='gridItem')
         h2(class='albumTitle') #{item.name}
-        a(href='/play?id='+item.id)
+        a(href='/addItem?id='+item.id+'&name='+item.name)
           img(class='albumImg' src=item.images[0].url)
       -}
       -});

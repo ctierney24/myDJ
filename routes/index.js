@@ -18,6 +18,13 @@ router.get('/', authCheck, function(req, res) {
   res.render('index', { user: req.user });
 });
 
+//buildPlaylist
+//construct request with song and genre seeds to return recommendations
+//then create playlist from recommendations and display as playable
+router.get('/buildPlaylist', authCheck, function(req, res){
+  
+})
+
 //search spotify and display results
 router.get('/search', function(req, res, next){
   //Dont use spotifyApi wrapper to search all types of objects
@@ -35,9 +42,8 @@ router.get('/search', function(req, res, next){
   var searchCallback = function (error, response, body){
     if (!error && response.statusCode == 200){
       var info = JSON.parse(body);
-      res.render('index', {results: info});
+      res.render('index', {results: info, seeds: req.session.seeds});
     } else {
-      console.log(response);
       console.log(error);
       res.redirect('/land');
     }
@@ -47,6 +53,31 @@ router.get('/search', function(req, res, next){
 
 });
 
+//add search results to playlist seed list
+router.get('/addItem', authCheck, function(req, res, next){
+  var seed = {id: req.query.id, name:req.query.name};
+
+  if (req.session.seeds){
+    req.session.seeds.push(seed);
+  }else{
+    req.session.seeds=[];
+    req.session.seeds.push(seed);}
+  res.redirect('/land');
+});
+
+//remove item from playlist Seeds
+router.post('/removeItem', authCheck, function(req, res){
+  var seeds= req.session.seeds;
+  var deleteID= req.query.id;
+  for(var i=0; i<seeds.length; i++){
+    if(seeds[i].id == deleteID){
+      seeds.splice(i, 1);
+    }
+  }
+  req.session.seeds=seeds;
+  console.log(req.session.seeds);
+  res.redirect('/land');
+});
 
 
 //landing page after login
@@ -68,7 +99,7 @@ router.get('/land', authCheck, function(req, res, next){
   var getPlaylists = function(userId){
     spotifyApi.getUserPlaylists(userId, { limit: 50, offset: 0 })
     .then(function(data){
-      res.render('index', {playlists:data.body});
+      res.render('index', {playlists:data.body, seeds:req.session.seeds});
     },function(err){
       console.log('Error retriving playlists', err);
       res.end();
