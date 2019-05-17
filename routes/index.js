@@ -18,12 +18,6 @@ router.get('/', authCheck, function(req, res) {
   res.render('index', { user: req.user });
 });
 
-//buildPlaylist
-//construct request with song and genre seeds to return recommendations
-//then create playlist from recommendations and display as playable
-router.get('/buildPlaylist', authCheck, function(req, res){
-  
-})
 
 //search spotify and display results
 router.get('/search', function(req, res, next){
@@ -53,15 +47,72 @@ router.get('/search', function(req, res, next){
 
 });
 
+//buildPlaylist
+//construct request with song and artist seeds to return recommendations
+//then create playlist from recommendations and display as playable
+//add tunable target artributes, possibly from agregating playlist data
+router.get('/buildPlaylist', authCheck, function(req, res){
+  var seeds = req.session.seeds,
+      artists = 'seed_artists=',
+      tracks = 'seed_tracks=';
+
+
+  for(var i=0; i<seeds.length; i++){
+    if(seeds[i].cat=='artist'){
+      artists += (seeds[i].id + ',');
+    } else if (seeds[i].cat=='track'){
+      tracks += (seeds[i].id + ',');
+    }
+  }
+
+  //trim trailing commas
+  artists = artists.slice(0, artists.length-1);
+  tracks = tracks.slice(0, tracks.length-1);
+
+  var options = {
+    url: 'https://api.spotify.com/v1/recommendations?'+
+          artists + '&' + tracks +
+          '&limit=100',
+    headers: {
+      'Authorization': 'Bearer '+ req.session.access_token
+    }
+  };
+
+  var recCallback = function (error, response, body){
+    if (!error && response.statusCode == 200){
+      var info = JSON.parse(body);
+      //here make playlist then redirect to play
+      console.log(info);
+      res.redirect('/land');
+    } else {
+      console.log(error);
+      res.redirect('/land');
+    }
+  };
+
+  request(options, recCallback);
+});
+
+
 //add search results to playlist seed list
 router.get('/addItem', authCheck, function(req, res, next){
-  var seed = {id: req.query.id, name:req.query.name};
+  var seed = {id: req.query.id, name:req.query.name, cat:req.query.cat};
 
   if (req.session.seeds){
     req.session.seeds.push(seed);
+    req.session.seeds=trimSeeds(req.session.seeds);
   }else{
     req.session.seeds=[];
     req.session.seeds.push(seed);}
+
+  //if length exceeds 5, throw out first item added
+  function trimSeeds(seeds){
+    if (seeds.length>5){
+      console.log(seeds.slice(1,5));
+      return seeds.slice(1,5);
+    } else{ return seeds;}
+  }
+
   res.redirect('/land');
 });
 
