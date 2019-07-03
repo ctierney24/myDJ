@@ -20,10 +20,37 @@ router.get('/', authCheck, function(req, res) {
 
 //buildPlaylist
 //construct request with song and genre seeds to return recommendations
-//then create playlist from recommendations and display as playable
+//currently only set up for artist seeds
 router.get('/buildPlaylist', authCheck, function(req, res){
-  
-})
+
+  var seedArr = req.session.seeds;
+  var seedStr = '&seed_artists=';
+
+  seedArr.forEach(function(seed){
+    seedStr += (seed.id+',');
+  });
+  //remove trailing comma
+  seedStr=seedStr.slice(0, -1);
+
+  var options = {
+    url: 'https://api.spotify.com/v1/recommendations'+
+          '?limit=10' + seedStr,
+    headers: {
+      'Authorization': 'Bearer '+ req.session.access_token
+    }
+  };
+
+  var reccCallback= function(error, response, body){
+    if (!error && response.statusCode == 200){
+      console.log(body['tracks']);
+      res.render('index', {results: body.tracks, seeds: req.session.seeds});
+    } else {
+      console.log(error);
+      res.redirect('/land');
+    }
+  }
+  request(options, reccCallback);
+});
 
 //search spotify and display results
 router.get('/search', function(req, res, next){

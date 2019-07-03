@@ -25,5 +25,13 @@
   "devDependencies": {},
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ctierney24/myDJ.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ctierney24/myDJ/issues"
+  },
+  "homepage": "https://github.com/ctierney24/myDJ#readme",
   "description": ""
 }
