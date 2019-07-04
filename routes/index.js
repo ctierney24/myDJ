@@ -41,9 +41,12 @@ router.get('/buildPlaylist', authCheck, function(req, res){
   };
 
   var reccCallback= function(error, response, body){
+
     if (!error && response.statusCode == 200){
-      console.log(body['tracks']);
-      res.render('index', {results: body.tracks, seeds: req.session.seeds});
+
+      var resJSON = (JSON.parse(body));
+      console.log(resJSON);
+      res.render('reccs', {results: resJSON, seeds: req.session.seeds});
     } else {
       console.log(error);
       res.redirect('/land');
@@ -111,11 +114,13 @@ router.post('/removeItem', authCheck, function(req, res){
 router.get('/land', authCheck, function(req, res, next){
   //init api and set access token from req
   var spotifyApi = new SpotifyWebApi();
+  console.log('SpotAPI init done');
   spotifyApi.setAccessToken(req.session.access_token);
   spotifyApi.setRefreshToken(req.session.refresh_token);
   //get username to run other calls before rest of scripts execute
   spotifyApi.getMe()
   .then(function(data){
+    console.log('GEt me done');
     getPlaylists(data.body.id);
     },function(err){
       console.log('Error fetching userId', err);
@@ -126,6 +131,7 @@ router.get('/land', authCheck, function(req, res, next){
   var getPlaylists = function(userId){
     spotifyApi.getUserPlaylists(userId, { limit: 50, offset: 0 })
     .then(function(data){
+      console.log('Get playlists done');
       res.render('index', {playlists:data.body, seeds:req.session.seeds});
     },function(err){
       console.log('Error retriving playlists', err);

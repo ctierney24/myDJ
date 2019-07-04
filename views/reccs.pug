@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  -if(seeds){
+  h2 Playlist Seeds
+  div(class='seedGrid')
+    -for(var i=0; i<seeds.length; i++){
+    div
+      label #{seeds[i].name}
+      form(method='POST' action='/removeItem?id='+seeds[i].id)
+        button(type='submit') Remove
+    -}
+  br
+  -if(results){
+  div(class='resultGrid')
+    div(class='resultSub')
+      h2 Songs
+      -console.log('ummm fuck' + results);
+      -results.tracks.items.forEach(function(item){
+      div(class='gridItem')
+        p #{item.name}
+      -})
+  -}}
