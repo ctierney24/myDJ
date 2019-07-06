@@ -15,8 +15,8 @@ block content
   div(class='resultGrid')
     div(class='resultSub')
       h2 Songs
-      -console.log('ummm fuck' + results);
-      -results.tracks.items.forEach(function(item){
+      -var tracks = (results["tracks"]);
+      -tracks.forEach(function(item){
       div(class='gridItem')
         p #{item.name}
       -})
