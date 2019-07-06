@@ -16,7 +16,7 @@ router.get('/', function(req, res) {
 router.get(
   '/spotify',
   passport.authenticate('spotify', {
-    scope: ['user-read-email', 'user-read-private', 'playlist-read-private', 'playlist-read-collaborative'],
+    scope: ['user-modify-playback-state', 'user-read-email', 'user-read-private', 'playlist-read-private', 'playlist-read-collaborative'],
     showDialog: true
   }),
   function(req, res) {

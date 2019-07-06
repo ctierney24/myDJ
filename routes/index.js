@@ -18,6 +18,8 @@ router.get('/', authCheck, function(req, res) {
   res.render('index', { user: req.user });
 });
 
+
+
 //buildPlaylist
 //construct request with song and genre seeds to return recommendations
 //currently only set up for artist seeds
@@ -52,6 +54,8 @@ router.get('/buildPlaylist', authCheck, function(req, res){
       res.redirect('/land');
     }
   }
+
+
   request(options, reccCallback);
 });
 
@@ -105,7 +109,6 @@ router.post('/removeItem', authCheck, function(req, res){
     }
   }
   req.session.seeds=seeds;
-  console.log(req.session.seeds);
   res.redirect('/land');
 });
 
@@ -114,13 +117,11 @@ router.post('/removeItem', authCheck, function(req, res){
 router.get('/land', authCheck, function(req, res, next){
   //init api and set access token from req
   var spotifyApi = new SpotifyWebApi();
-  console.log('SpotAPI init done');
   spotifyApi.setAccessToken(req.session.access_token);
   spotifyApi.setRefreshToken(req.session.refresh_token);
   //get username to run other calls before rest of scripts execute
   spotifyApi.getMe()
   .then(function(data){
-    console.log('GEt me done');
     getPlaylists(data.body.id);
     },function(err){
       console.log('Error fetching userId', err);
@@ -131,7 +132,6 @@ router.get('/land', authCheck, function(req, res, next){
   var getPlaylists = function(userId){
     spotifyApi.getUserPlaylists(userId, { limit: 50, offset: 0 })
     .then(function(data){
-      console.log('Get playlists done');
       res.render('index', {playlists:data.body, seeds:req.session.seeds});
     },function(err){
       console.log('Error retriving playlists', err);
@@ -165,4 +165,55 @@ router.get('/play', function(req, res, next){
   }
 });
 
+//play track of associated play button from reccomendations
+router.get('/playOne', function(req, res, next){
+  var trackURI= req.query.uri;
+  var options = {
+    url: 'https://api.spotify.com/v1/me/player/play',
+    method: 'PUT',
+    json: true,
+    body: {
+      'uris': [trackURI]
+    },
+    headers: {
+      'Authorization': 'Bearer '+ req.session.access_token
+    }
+  };
+
+  console.log('playOptions:     '+JSON.stringify(options));
+
+  const playOneCallback = function (error, response){
+    if (!error && response.statusCode == 200){
+      res.end();
+    } else {
+      console.log('ERROR');
+      console.log(response.statusCode);
+      res.end();
+    }
+  }
+  request(options, playOneCallback);
+
+})
+
+//play current track on active device
+router.get('/playAll', function(req, res, next){
+  var options = {
+    url: 'https://api.spotify.com/v1/me/player/play',
+    method: 'PUT',
+    headers: {
+      'Authorization': 'Bearer '+ req.session.access_token
+    }
+  };
+
+  const playAllCallback = function (error, response){
+    if (!error && response.statusCode == 200){
+      res.end();
+    } else {
+      console.log(error);
+      res.end();
+    }
+  }
+  request(options, playAllCallback);
+
+})
 module.exports = router;

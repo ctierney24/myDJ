@@ -1,23 +1,26 @@
 extends layout
 
 block content
+  h2 Control Playback on Your Account
+  a(href='/playAll')
+    p &#9658
   -if(seeds){
   h2 Playlist Seeds
   div(class='seedGrid')
     -for(var i=0; i<seeds.length; i++){
     div
       label #{seeds[i].name}
-      form(method='POST' action='/removeItem?id='+seeds[i].id)
-        button(type='submit') Remove
     -}
   br
   -if(results){
   div(class='resultGrid')
-    div(class='resultSub')
-      h2 Songs
-      -var tracks = (results["tracks"]);
-      -tracks.forEach(function(item){
-      div(class='gridItem')
-        p #{item.name}
-      -})
+    h2 Songs
+    -var tracks = (results["tracks"]);
+    -tracks.forEach(function(item){
+    div(class='gridItem')
+      p #{item.name}
+      br
+      a(href='/playOne?uri='+ item.uri)
+        p &#9658
+    -})
   -}}
