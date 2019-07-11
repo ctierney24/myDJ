@@ -4,18 +4,18 @@ block content
   h2 Control Playback on Your Account
   a(href='/playAll')
     p &#9658
-  -if(seeds){
+  -if(session.seeds){
   h2 Playlist Seeds
   div(class='seedGrid')
-    -for(var i=0; i<seeds.length; i++){
+    -for(var i=0; i<session.seeds.length; i++){
     div
-      label #{seeds[i].name}
+      label #{session.seeds[i].name}
     -}
   br
-  -if(results){
+  -if(session.reccs){
   div(class='resultGrid')
     h2 Songs
-    -var tracks = (results["tracks"]);
+    -var tracks = (session.reccs["tracks"]);
     -tracks.forEach(function(item){
     div(class='gridItem')
       p #{item.name}

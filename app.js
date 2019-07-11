@@ -26,6 +26,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({ secret: keys.session.secret, resave: true, saveUninitialized: true }));
+app.use(function(req,res,next){
+    res.locals.session = req.session;
+    next();
+});
 // Initialize Passport!  Also use passport.session() middleware, to support
 // persistent login sessions (recommended).
 app.use(passport.initialize());

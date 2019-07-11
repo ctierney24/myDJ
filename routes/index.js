@@ -46,9 +46,8 @@ router.get('/buildPlaylist', authCheck, function(req, res){
 
     if (!error && response.statusCode == 200){
 
-      var resJSON = (JSON.parse(body));
-      console.log(resJSON);
-      res.render('reccs', {results: resJSON, seeds: req.session.seeds});
+      req.session.reccs = (JSON.parse(body));
+      res.render('reccs');
     } else {
       console.log(error);
       res.redirect('/land');
