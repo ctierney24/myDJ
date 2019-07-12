@@ -47,6 +47,7 @@ router.get('/buildPlaylist', authCheck, function(req, res){
     if (!error && response.statusCode == 200){
 
       req.session.reccs = (JSON.parse(body));
+      console.log(body);
       res.render('reccs');
     } else {
       console.log(error);
@@ -187,7 +188,7 @@ router.get('/playOne', function(req, res, next){
     } else {
       console.log('ERROR');
       console.log(response.statusCode);
-      res.end();
+      res.render('reccs');
     }
   }
   request(options, playOneCallback);
